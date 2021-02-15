@@ -15,7 +15,7 @@ annotate(x, annotation)
 List of vectors of indices of overlapping intervals/points.
 }
 \description{
-Create a list of vectors of indices/names of intervals/points in \code{y} (if \code{y} is a two-column matrix/vector respectively) which intersect with each interval/point in \code{x} (if \code{x} is a two-column matrix/vector respectively).
+Create a list of vectors of indices/names of intervals/points in \code{annotation} (if \code{annotation} is a two-column matrix/vector respectively) which intersect with each interval/point in \code{x} (if \code{x} is a two-column matrix/vector respectively).
 }
 \examples{
 annotate(rbind(A=c(1, 100), B=c(50, 100)), rbind(a=c(1, 2), b=c(49, 51), c=c(50, 200)))

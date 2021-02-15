@@ -227,7 +227,7 @@ join <- function(..., output="intervals") {
 }
 
 #' @title Annotate one set of intervals with the names of those which intersect with the other
-#' @description Create a list of vectors of indices/names of intervals/points in \code{y} (if \code{y} is a two-column matrix/vector respectively) which intersect with each interval/point in \code{x} (if \code{x} is a two-column matrix/vector respectively). 
+#' @description Create a list of vectors of indices/names of intervals/points in \code{annotation} (if \code{annotation} is a two-column matrix/vector respectively) which intersect with each interval/point in \code{x} (if \code{x} is a two-column matrix/vector respectively). 
 #' @param x Integer matrix of two columns, the first column giving the (inclusive) start points of intervals and the second column giving the corresponding (exclusive) end points, or, an integer vector specifying the location of points. 
 #' @param annotation Matrix specifying intervals or vector specifying points with which to annotate \code{x}. 
 #' @return List of vectors of indices of overlapping intervals/points.
@@ -242,4 +242,16 @@ annotate <- function(x, annotation) {
 	x_rows <- if (is.null(rownames(x_mat))) seq_len(nrow(x_mat)) else rownames(x_mat)
 	anno_rows <- if (is.null(rownames(annotation_mat))) seq_len(nrow(annotation_mat)) else rownames(annotation_mat)
 	(if (is.null(rownames(x_mat))) unname else identity)(split(f=factor(x_rows[ovlps[,1L]], levels=x_rows), x=anno_rows[ovlps[,2L]]))
+}
+
+#' @title Determine whether each interval in a given set are intersected by any in another set
+#' @description Compute a logical vector indicating whether corresponding intervals specified by \code{x} overlap any in \code{by_intervals}.
+#' @param x Integer matrix of two columns, the first column giving the (inclusive) start points of intervals and the second column giving the corresponding (exclusive) end points, or, an integer vector specifying the location of points. 
+#' @param by_intervals Matrix specifying intervals to test for intersection of. 
+#' @return Logical vector with elements corresponding to rows of \code{x}.
+#' @export
+#' @examples
+#' intersected(rbind(c(1, 2), c(49, 51), c(50, 200)), rbind(c(50, 100)))
+intersected <- function(x, by_intervals) {
+	unname(table(factor(join(x, flatten(by_intervals))[,1], levels=seq_len(nrow(x)))) > 0)
 }
