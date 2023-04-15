@@ -2,9 +2,12 @@
 % Please edit documentation in R/functions.R
 \name{intersected}
 \alias{intersected}
-\title{Determine whether each interval in a given set are intersected by any in another set}
+\alias{covered}
+\title{Determine whether each interval in a given set are intersected/covered by intervals in another set}
 \usage{
 intersected(x, by_intervals)
+
+covered(x, by_intervals)
 }
 \arguments{
 \item{x}{Integer matrix of two columns, the first column giving the (inclusive) start points of intervals and the second column giving the corresponding (exclusive) end points, or, an integer vector specifying the location of points.}
@@ -15,8 +18,9 @@ intersected(x, by_intervals)
 Logical vector with elements corresponding to rows of \code{x}.
 }
 \description{
-Compute a logical vector indicating whether corresponding intervals specified by \code{x} overlap any in \code{by_intervals}.
+Compute a logical vector indicating whether corresponding intervals specified by \code{x} overlap (\code{intersected})/are covered by (\code{covered}) those in \code{by_intervals}.
 }
 \examples{
 intersected(rbind(c(1, 2), c(49, 51), c(50, 200)), rbind(c(50, 100)))
+covered(rbind(c(1, 10), c(49, 51), c(50, 200)), rbind(c(2, 60)))
 }

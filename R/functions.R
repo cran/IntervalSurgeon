@@ -244,14 +244,37 @@ annotate <- function(x, annotation) {
 	(if (is.null(rownames(x_mat))) unname else identity)(split(f=factor(x_rows[ovlps[,1L]], levels=x_rows), x=anno_rows[ovlps[,2L]]))
 }
 
-#' @title Determine whether each interval in a given set are intersected by any in another set
-#' @description Compute a logical vector indicating whether corresponding intervals specified by \code{x} overlap any in \code{by_intervals}.
+#' @title Determine whether each interval in a given set are intersected/covered by intervals in another set
+#' @description Compute a logical vector indicating whether corresponding intervals specified by \code{x} overlap (\code{intersected})/are covered by (\code{covered}) those in \code{by_intervals}.
 #' @param x Integer matrix of two columns, the first column giving the (inclusive) start points of intervals and the second column giving the corresponding (exclusive) end points, or, an integer vector specifying the location of points. 
 #' @param by_intervals Matrix specifying intervals to test for intersection of. 
 #' @return Logical vector with elements corresponding to rows of \code{x}.
 #' @export
 #' @examples
 #' intersected(rbind(c(1, 2), c(49, 51), c(50, 200)), rbind(c(50, 100)))
+#' covered(rbind(c(1, 10), c(49, 51), c(50, 200)), rbind(c(2, 60)))
 intersected <- function(x, by_intervals) {
 	unname(table(factor(join(x, flatten(by_intervals))[,1], levels=seq_len(nrow(x)))) > 0)
+}
+
+#' @rdname intersected
+#' @export
+covered <- function(x, by_intervals) {
+	!intersected(x, setdiffs(matrix(ncol=2, data=range(x)), by_intervals))
+}
+
+#' @title Calculate proportion overlapping of intersecting intervals
+#' @description Proportion overlapping is calculated as the size of the intersection of intervals, divided by the size of the union.
+#' @param ... Interval matrices (passed to \code{\link{join}}).
+#' @return \code{data.frame} containing integer columns corresponding to indices of intervals within the input matrices and a final numeric column called \code{proportion_overlap} containing the fraction of the size of the intersection within the union.
+#' @importFrom stats setNames
+#' @export
+#' @examples
+#' proportion_overlap(rbind(c(1, 2), c(49, 51), c(50, 200)), rbind(c(50, 100)))
+proportion_overlap <- function(...) {
+	j <- join(..., output="intervals")
+	l <- list(...)
+	i <- split(t(j[,seq_along(l),drop=FALSE]), f=seq_len(ncol(j)-2))
+	num <- j[,-seq_along(l),drop=FALSE]
+	setNames(nm=c(if (is.null(names(l))) sprintf("intervals%d", seq_along(l)) else names(l), "proportion_overlap"), cbind(as.data.frame(i), (num[,2]-num[,1])/do.call(what="-", Map(list(pmax, pmin), 2:1, f=function(f, ii) do.call(what=f, Map(lapply(l, function(m) m[col(m)==ii]), i, f="["))))))
 }
